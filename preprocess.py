@@ -147,7 +147,7 @@ def process(df):
             'comp8_rate', 'comp8_inv', 'comp8_rate_percent_diff',
             'click_bool', 'gross_bookings_usd', 'booking_bool']
         '''
-
+        
         search_ids.append(pd.DataFrame(stat,index = stat_col1))
         #search_ids.append(pd.DataFrame(stat, index = stat_col1 + stat_col2 + stat_col3))
     
