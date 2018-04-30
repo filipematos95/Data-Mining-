@@ -22,39 +22,37 @@ main.
 """
 
 
-
 ###################################### example raw plotting ########################################
 
 
 # read in part of the data and plot
-size = sum(1 for l in open("Data Mining VU data/Data Mining VU data/training_set_VU_DM_2014.csv"))
-df = pd.read_csv("Data Mining VU data/Data Mining VU data/training_set_VU_DM_2014.csv", skiprows=range(1, size - 10000))
+df = pd.read_csv("random_samples_1000.csv")
 
-df[df.columns[0:15]].iloc[0:200].plot(subplots= True, figsize = (10,20))
-df[df.columns[15:30]].iloc[0:200].plot(subplots= True, figsize = (10,20))
-df[df.columns[30:45]].iloc[0:200].plot(subplots= True, figsize = (10,20))
-df[df.columns[45:60]].iloc[0:200].plot(subplots= True, figsize = (10,20))
+if plot == True:
+  df[df.columns[0:15]].iloc[0:200].plot(subplots= True, figsize = (10,20))
+  df[df.columns[15:30]].iloc[0:200].plot(subplots= True, figsize = (10,20))
+  df[df.columns[30:45]].iloc[0:200].plot(subplots= True, figsize = (10,20))
+  df[df.columns[45:60]].iloc[0:200].plot(subplots= True, figsize = (10,20))
 
-df[df.columns[0:15]].iloc[2000:2200].plot(subplots= True, figsize = (10,20))
-df[df.columns[15:30]].iloc[0:2000].plot(subplots= True, figsize = (10,20))
-df[df.columns[30:45]].iloc[0:2000].plot(subplots= True, figsize = (10,20))
-df[df.columns[45:60]].iloc[0:2000].plot(subplots= True, figsize = (10,20))
+  df[df.columns[0:15]].iloc[2000:2200].plot(subplots= True, figsize = (10,20))
+  df[df.columns[15:30]].iloc[0:2000].plot(subplots= True, figsize = (10,20))
+  df[df.columns[30:45]].iloc[0:2000].plot(subplots= True, figsize = (10,20))
+  df[df.columns[45:60]].iloc[0:2000].plot(subplots= True, figsize = (10,20))
 
-grr = pd.plotting.scatter_matrix(df[df.columns[0:15]].iloc[:,2:], figsize=(15, 15), marker='.',
-    hist_kwds={'bins': 20}, s=20, alpha=.8)
+
+  grr = pd.plotting.scatter_matrix(df[df.columns[0:15]].iloc[:,2:], figsize=(15, 15), marker='.',
+      hist_kwds={'bins': 20}, s=20, alpha=.8)
 
  	
-print(df.describe())
+  print(df.describe())
 
 ###################################### example preprocessed plotting ########################################
 
 
-
 # process the data to search ids (takes a while to run!(1 hour)
-filename = "Data Mining VU data/Data Mining VU data/training_set_VU_DM_2014.csv"
-chunksize = 10 ** 6
+filename = "random_samples_1000.csv"
 new = make_data(filename, chunksize)
-new.to_csv('new.csv')
+new.to_csv('preprocessed1.csv')
 
 # this goes faster
 df = pd.read_csv("new.csv") 

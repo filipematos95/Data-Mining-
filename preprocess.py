@@ -11,6 +11,7 @@ import itertools
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 #%matplotlib inline
 
 """
@@ -20,7 +21,7 @@ File reads in data by chunks to compress search id to one row.
 
 ###################################### readin data ########################################
 
-# function processes chinks of read in data frame
+# function processes chunks of read in data frame
 def process(df):
 
     search_ids = []
@@ -30,12 +31,12 @@ def process(df):
         
         #Get the data for one search_id
         sdf = df[df['srch_id']==search_id]
-        sdf = sdf.sort(['position'], ascending = 1) 
+        sdf = sdf.sort_values(by = ['position']) 
 
-        #Computes the wieghts 
+        #Computes the wieghtseach 
         weight = np.linspace(len(sdf),0,len(sdf))
         
-        #Make an list with statistics for each search
+        #Make an list with statistics for  search
         stat = []
         stat.append(search_id)    
         stat.append(len(sdf))                                          # number of rows
@@ -65,17 +66,17 @@ def process(df):
         else:
 
             stat.append(sdf['prop_id'].iloc[0])
-            stat.append(np.average(sdf['prop_brand_bool'], weights=weights))
+            stat.append(np.average(sdf['prop_brand_bool'], weights=weight))
            
-            if len(sdf[sdf['prop_starrating']>0]) > 0:
-                w = weigth[0:len(sdf[sdf['prop_starrating']>0])
-                stat.append(np.average(sdf[sdf['prop_starrating']>0],weights=w))
+            if len(sdf[sdf['prop_starrating'] > 0]) > 0:
+                w = weight[:len(sdf[sdf['prop_starrating'] > 0])]
+                stat.append(np.average(sdf[sdf['prop_starrating'] > 0]['prop_starrating'],weights = w))
             else:
                 stat.append(np.nan)
 
-            if len(sdf[sdf['prop_review_score']>0]) > 0:
-                w = weigth[0:len(sdf[sdf['prop_review_score']>0])]
-                stat.append(np.average(sdf[sdf['prop_review_score']>0], weights=w)) # hotel star rating (0 = no revieuw, null = no info))(0 = missing) prop_starrating_avg
+            if len(sdf[sdf['prop_review_score'] > 0]) > 0:
+                w = weight[:len(sdf[sdf['prop_review_score'] > 0])]
+                stat.append(np.average(sdf[sdf['prop_review_score'] > 0]['prop_review_score'], weights=w)) # hotel star rating (0 = no revieuw, null = no info))(0 = missing) prop_starrating_avg
             else:
                 stat.append(np.nan)
 
@@ -147,23 +148,38 @@ def process(df):
             'click_bool', 'gross_bookings_usd', 'booking_bool']
         '''
 
-        search_ids.append(pd.DataFrame(stat,indes = stat_col1))
+        search_ids.append(pd.DataFrame(stat,index = stat_col1))
         #search_ids.append(pd.DataFrame(stat, index = stat_col1 + stat_col2 + stat_col3))
     
     return pd.concat(search_ids,axis = 1).T
 
 # function read in data and process chunks to combine afterwords
-def make_data(filename, chunksize):
+def make_data(filename, chunksize = 0):
     
     new_data = []
-    
-    for df in pd.read_csv(filename, chunksize=chunksize):
-        
-        new_data.append(process(df))
+    if chunksize == 0:
+        new_data =  process(pd.read_csv(filename))
+        return new_data
 
-    result = pd.concat(new_data, axis = 0)
-    
-    return result
+    elif chunksize > 0: 
+        for df in pd.read_csv(filename, chunksize=chunksize):
+            
+            new_data.append(process(df))
+
+        result = pd.concat(new_data, axis = 0)
+        return result
+
+    else: 
+        print "The chunksize should have a positive or zero value"
+        return 0
+if len(sys.argv) > 1: 
+    filename = sys.argv[1]
+else:
+    filename = "random_samples_1000.csv"
+
+filename = "random_samples_1000.csv"
+new = make_data(filename)
+new.to_csv('preprocessed1.csv')
     
 
 
