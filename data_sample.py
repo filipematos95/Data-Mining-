@@ -7,7 +7,7 @@ filename = "training_set_VU_DM_2014.csv"
 
 n = sum(1 for line in open(filename)) - 1
 
-if len(sys.argv) > 1 
+if len(sys.argv) > 1:
 	s = sys.argv[1]
 else: 
 	print "Please spicify the size of the sample you want"
