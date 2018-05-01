@@ -26,10 +26,10 @@ def average(feature, w, exclude = None):
     if exclude != None:
         excluded = feature[feature != exclude]
         if len(excluded) > 0:
-            return np.average(excluded, weights=w[0:len(excluded)]).item() 
+            return np.average(excluded, weights=w[0:len(excluded)])
     else:
         if len(feature) > 0:
-            return np.average(feature, weights=w[0:len(feature)]).item()   
+            return np.average(feature, weights=w[0:len(feature)])
     return np.nan
 
 # function that returns nan if empty and elsethefirst element
@@ -73,15 +73,14 @@ def process(df):
         stat.append(sdf['visitor_hist_adr_usd'].iloc[0])               # mean price earlier booked (NaN else)
         stat.append(sdf['prop_country_id'].iloc[0])                    # hotel country ID
 
-
         if booked:
           
-            stat.append(sdf[sdf['booking_bool'] == 1]['prop_id']) #Hotel ID
-            stat.append(sdf[(sdf['booking_bool'] == 1) & (sdf['prop_starrating']!=0)]['prop_starrating'])
-            stat.append(sdf[(sdf['booking_bool'] == 1) ]['prop_brand_bool'])
-            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score1']),weights = weight)
-            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score2']),weights = weight)
-            stat.append(sdf[sdf['booking_bool'] == 1]['prop_review_score'])
+            stat.append(sdf[sdf['booking_bool'] == 1]['prop_id'].iloc[0]) #Hotel ID
+            stat.append(sdf[(sdf['booking_bool'] == 1) & (sdf['prop_starrating']!=0)]['prop_starrating'].iloc[0])
+            stat.append(sdf[(sdf['booking_bool'] == 1) ]['prop_brand_bool'].iloc[0])
+            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score1'],weights = weight))
+            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score2'],weights = weight))
+            stat.append(sdf[sdf['booking_bool'] == 1]['prop_review_score'].iloc[0])
 
         elif clicked:
            
@@ -96,7 +95,7 @@ def process(df):
 
             stat.append(sdf['prop_id'].iloc[0])
             stat.append(average(sdf['prop_starrating'], weight, 0))
-            stat.append(np.round(average(sdf['prop_brand_bool'])))
+            stat.append(np.round(average(sdf['prop_brand_bool'],weight,None)))
             stat.append(average(sdf['prop_location_score1'], weight, None))
             stat.append(average(sdf['prop_location_score2'], weight, None))
             stat.append(average(sdf['prop_review_score'], weight, 0))
@@ -171,9 +170,10 @@ def process(df):
             'click_bool', 'gross_bookings_usd', 'booking_bool']
         '''
         
-        search_ids.append(pd.DataFrame(stat,index = stat_col1))
-        #search_ids.append(pd.DataFrame(stat, index = stat_col1 + stat_col2 + stat_col3))
-    
+        search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2))
+    #search_ids.append(pd.DataFrame(stat, index = stat_col1 + stat_col2 + stat_col3))
+    test = pd.concat(search_ids,axis = 1).T
+    print test
     return pd.concat(search_ids,axis = 1).T
 
 # function read in data and process chunks to combine afterwords
