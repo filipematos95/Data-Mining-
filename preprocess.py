@@ -33,11 +33,9 @@ def average(feature, w, exclude = None):
     if exclude != None:
         excluded = feature[feature != exclude]
         if len(excluded) > 0:
-            #return excluded.mean()
             return np.average(excluded, weights=w[0:len(excluded)]).item() 
     else:
         if len(feature) > 0:
-            #return feature.mean()
             return np.average(feature, weights=w[0:len(feature)]).item()
     return np.nan
 
@@ -93,11 +91,11 @@ def process(df):
         elif click:
            
             stat.append(sdf[ sdf['click_bool'] == 1 ].loc[0,'prop_id'].item())                                   
-            stat.append(sdf[ (sdf['click_bool']==1) & (sdf['prop_starrating']!=0) ]['prop_starrating'].iloc[0].item())
+            stat.append( first( sdf[(sdf['click_bool']==1) & (sdf['prop_starrating']!=0) ]['prop_starrating']))
             stat.append(sdf[ sdf['click_bool']==1 ]['prop_brand_bool'].iloc[0].item())
-            stat.append(sdf[ (sdf['booking_bool']==1) & (sdf['prop_location_score1']!=0)]['prop_location_score1'].iloc[0].item())
-            stat.append(sdf[ (sdf['booking_bool']==1) & (sdf['prop_location_score2']!=0) ]['prop_location_score2'].iloc[0].item()) 
-            stat.append(sdf[ (sdf['booking_bool']==1) & (sdf['prop_review_score']!=0) ]['prop_review_score'].iloc[0].item())
+            stat.append( first(sdf[(sdf['booking_bool']==1) & (sdf['prop_location_score1']!=0)]['prop_location_score1']))
+            stat.append( first(sdf[(sdf['booking_bool']==1) & (sdf['prop_location_score2']!=0) ]['prop_location_score2'])) 
+            stat.append( first(sdf[(sdf['booking_bool']==1) & (sdf['prop_review_score']!=0) ]['prop_review_score']))
 
         else:
 
@@ -107,8 +105,15 @@ def process(df):
             stat.append( average(sdf['prop_location_score1'], weight, None) )
             stat.append( average(sdf['prop_location_score2'], weight, None) )
             stat.append( average(sdf['prop_review_score'], weight, 0) )
-           
-        stat_col2 = ['prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2', 'prop_review_score'] 
+        
+        # add some averages
+        stat.append( average(sdf['prop_starrating'], weight, 0) )
+        stat.append( average(sdf['prop_location_score1'], weight, None) )
+        stat.append( average(sdf['prop_location_score2'], weight, None) )
+        stat.append( average(sdf['prop_review_score'], weight, 0) )
+
+        stat_col2 = ['prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2', 'prop_review_score',
+            'prop_starrating_avg', 'prop_location_score1_avg', 'prop_location_score2_avg', 'prop_review_score_avg']
         
         '''
         stat.append(sdf[sdf['prop_log_historical_price']>0]['prop_log_historical_price'].mean())            # log of mean price when sold (not sold= 0)
