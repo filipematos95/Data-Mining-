@@ -1,7 +1,9 @@
+from __future__ import *
 import pandas as pd
 import random 
 import numpy as np
 import sys
+
 
 filename = "training_set_VU_DM_2014.csv"
 samples = 1000
