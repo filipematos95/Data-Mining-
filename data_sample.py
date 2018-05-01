@@ -13,7 +13,7 @@ else:
 	print("Please spicify the size of the sample you want")
 	print("Using default 1000")
 
-skip = sorted(random.sample(xrange(1,n+1),n-s))
+skip = sorted(random.sample(range(1,n+1),n-s))
 
 df = pd.read_csv(filename, skiprows=skip)
 
