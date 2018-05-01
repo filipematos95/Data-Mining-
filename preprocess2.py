@@ -20,6 +20,25 @@ File reads in data by chunks to compress search id to one row.
 """
 
 ###################################### readin data ########################################
+# help functions to take average over a series
+def average(feature, w, exclude = None):
+
+    if exclude != None:
+        excluded = feature[feature != exclude]
+        if len(excluded) > 0:
+            return np.average(excluded, weights=w[0:len(excluded)]).item() 
+    else:
+        if len(feature) > 0:
+            return np.average(feature, weights=w[0:len(feature)]).item()   
+    return np.nan
+
+# function that returns nan if empty and elsethefirst element
+def first(s):
+    
+    if s.empty:
+        return np.nan
+    else:
+        return s.iloc[0]
 
 # function processes chunks of read in data frame
 def process(df):
@@ -35,6 +54,15 @@ def process(df):
 
         #Computes the wieghtseach 
         weight = np.linspace(len(sdf),0,len(sdf))
+
+        booked = sdf['booking_bool'].max() == 1
+        clicked = sdf['click_bool'].max() == 1
+
+        stat_col1 = ['srch_id', 'rows', 'visitor_location_country_id', 'visitor_hist_starrating',
+            'visitor_hist_adr_usd']
+
+        stat_col2 = ['prop_country_id','prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2', 'prop_review_score',
+            'prop_starrating_avg', 'prop_location_score1_avg', 'prop_location_score2_avg', 'prop_review_score_avg']
         
         #Make an list with statistics for  search
         stat = []
@@ -44,8 +72,9 @@ def process(df):
         stat.append(sdf['visitor_hist_starrating'].iloc[0])            # history mean star rating (NaN else)
         stat.append(sdf['visitor_hist_adr_usd'].iloc[0])               # mean price earlier booked (NaN else)
         stat.append(sdf['prop_country_id'].iloc[0])                    # hotel country ID
-       
-        if sdf['booking_bool'].max() == 1:
+
+
+        if booked:
           
             stat.append(sdf[sdf['booking_bool'] == 1]['prop_id']) #Hotel ID
             stat.append(sdf[(sdf['booking_bool'] == 1) & (sdf['prop_starrating']!=0)]['prop_starrating'])
@@ -54,40 +83,30 @@ def process(df):
             stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score2']),weights = weight)
             stat.append(sdf[sdf['booking_bool'] == 1]['prop_review_score'])
 
-        elif sdf['click_bool'].max() == 1:
+        elif clicked:
            
             stat.append(sdf[sdf['click_bool'] == 1]['prop_id'].iloc[0])
-            stat.append(sdf[(sdf['click_bool'] == 1) & (sdf['prop_starrating']!=0) ]['prop_starrating'].iloc[0])
-            stat.append(sdf[sdf['click_bool'] == 1]['prop_brand_bool'].iloc[0])
-            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score1'],weights = weight))
-            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score2'],weights = weight)) 
-            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_review_score'], weights = weight))
+            stat.append(np.average(sdf[(sdf['click_bool'] == 1) & (sdf['prop_starrating']!=0) ]['prop_starrating']))
+            stat.append(np.round(np.average(sdf[sdf['click_bool'] == 1]['prop_brand_bool'])))
+            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score1']))
+            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score2'])) 
+            stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_review_score']))
 
         else:
 
             stat.append(sdf['prop_id'].iloc[0])
-            stat.append(sdf['prop_brand_bool'].iloc[0])
+            stat.append(average(sdf['prop_starrating'], weight, 0))
+            stat.append(np.round(average(sdf['prop_brand_bool'])))
+            stat.append(average(sdf['prop_location_score1'], weight, None))
+            stat.append(average(sdf['prop_location_score2'], weight, None))
+            stat.append(average(sdf['prop_review_score'], weight, 0))
+     
 
-            if len(sdf[sdf['prop_starrating'] > 0]) > 0:
-                w = weight[:len(sdf[sdf['prop_starrating'] > 0])]
-                stat.append(np.average(sdf[sdf['prop_starrating'] > 0]['prop_starrating'], weights = w))
-            else:
-                stat.append(np.nan)
-            
-            stat.append(np.average(sdf['prop_location_score1'], weights = weight))
-            stat.append(np.average(sdf['prop_location_score2'], weights = weight)) 
-
-            if len(sdf[sdf['prop_review_score'] > 0]) > 0:
-                w = weight[:len(sdf[sdf['prop_review_score'] > 0])]
-                stat.append(np.average(sdf[sdf['prop_review_score'] > 0]['prop_review_score'], weights=w)) # hotel star rating (0 = no revieuw, null = no info))(0 = missing) prop_starrating_avg
-            else:
-                stat.append(np.nan)
-
-
+        stat.append(average(sdf['prop_starrating'],weight, 0))
+        stat.append(average(sdf['prop_location_score1'],weight, None))
+        stat.append(average(sdf['prop_location_score2'],weight, None))
+        stat.append(average(sdf['prop_review_score'],weight, 0))
         
-        stat_col1 = ['srch_id', 'rows', 'visitor_location_country_id', 'visitor_hist_starrating',
-            'visitor_hist_adr_usd', 'prop_country_id', 'prop_id', 'prop_starrating', 'prop_starrating_avg'
-            'prop_review_score', 'prop_review_score_avg', 'prop_brand_bool', 'prop_brand_bool_avg' ] 
         
         '''
         stat.append(sdf[sdf['prop_log_historical_price']>0]['prop_log_historical_price'].mean())            # log of mean price when sold (not sold= 0)
@@ -176,14 +195,11 @@ def make_data(filename, chunksize = 0):
     else: 
         print "The chunksize should have a positive or zero value"
         return 0
+
 if len(sys.argv) > 1: 
     filename = sys.argv[1]
 else:
     filename = "random_samples_1000.csv"
 
-filename = "random_samples_1000.csv"
 new = make_data(filename)
 new.to_csv('preprocessed1.csv')
-    
-
-
