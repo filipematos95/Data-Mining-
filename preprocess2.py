@@ -24,12 +24,13 @@ File reads in data by chunks to compress search id to one row.
 def average(feature, w, exclude = None):
 
     if exclude != None:
-        excluded = feature[feature != exclude]
-        if len(excluded) > 0:
-            return np.average(excluded, weights=w[0:len(excluded)])
+        exclude = feature[feature != exclude]
+        if len(exclude) > 0:
+            return np.average(exclude, weights=w[0:len(exclude)])
     else:
         if len(feature) > 0:
             return np.average(feature, weights=w[0:len(feature)])
+
     return np.nan
 
 # function that returns nan if empty and elsethefirst element
