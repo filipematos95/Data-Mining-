@@ -62,7 +62,7 @@ def process(df):
         stat_col1 = ['srch_id', 'rows', 'visitor_location_country_id', 'visitor_hist_starrating',
             'visitor_hist_adr_usd']
 
-        stat_col2 = ['prop_country_id','prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2', 'prop_review_score',
+        stat_col2 = ['prop_country_id','prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2', 'prop_review_score','booked',
             'prop_starrating_avg', 'prop_location_score1_avg', 'prop_location_score2_avg', 'prop_review_score_avg']
         
         #Make an list with statistics for  search
@@ -82,6 +82,7 @@ def process(df):
             stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score1'],weights = weight))
             stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score2'],weights = weight))
             stat.append(sdf[sdf['booking_bool'] == 1]['prop_review_score'].iloc[0])
+            stat.append(2)
 
         elif clicked:
            
@@ -91,6 +92,7 @@ def process(df):
             stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score1']))
             stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_location_score2'])) 
             stat.append(np.average(sdf[sdf['booking_bool'] == 1]['prop_review_score']))
+            stat.append(1)
 
         else:
 
@@ -100,6 +102,7 @@ def process(df):
             stat.append(average(sdf['prop_location_score1'], weight, None))
             stat.append(average(sdf['prop_location_score2'], weight, None))
             stat.append(average(sdf['prop_review_score'], weight, 0))
+            stat.append(0)
      
 
         stat.append(average(sdf['prop_starrating'],weight, 0))

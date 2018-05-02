@@ -19,14 +19,14 @@ for country in prop_country_id:
 	#print np.mean(df.loc[df['prop_country_id'] == country]['prop_location_score2'])
 	country_values = np.array(df[df['prop_country_id'] == country]['prop_location_score2'])
 	
-	df[(df['prop_country_id'] == country) & np.isnan(df['prop_location_score2'])] =  np.nanmean(country_values)
+	df.at[(df['prop_country_id'] == country) & np.isnan(df['prop_location_score2']),'prop_location_score2'] =  np.nanmean(country_values)
 	
 	if len(df[(df['prop_country_id'] == country) & np.isnan(df['prop_location_score2'])]) > 0:
 		print df[(df['prop_country_id'] == country) & (df['prop_location_score2'] == np.nan)]
 	#print "Values: "+ str(np.nanmean(country_values))
 	
-	if  np.isnan(np.nanmean(country_values)): 
-		print country_values
+	#if  np.isnan(np.nanmean(country_values)): 
+		#print country_values
 
 df.to_csv(filename[:-4]+'_'+'corrected_loc_score_2'+'.csv')
-print df[np.isnan(df['prop_location_score2'])] 
+#print df[np.isnan(df['prop_location_score2'])] 
