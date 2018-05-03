@@ -16,7 +16,6 @@ import sys
 
 """
 File reads in data by chunks to compress search id to one row.
-
 """
 
 ###################################### readin data ########################################

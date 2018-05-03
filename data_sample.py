@@ -4,7 +4,7 @@ import numpy as np
 import sys
 
 
-filename = "training_set_VU_DM_2014.csv"
+filename = "../../training_set_VU_DM_2014.csv"
 samples = 1000
 
 if len(sys.argv) > 1:
@@ -17,4 +17,5 @@ else:
 	print("Using default 1000")
 
 df = pd.read_csv(filename, nrows = samples) 
-df.to_csv(filename[:-4]+"_"+str(samples)+".csv")
+df = df.sort_values(by = ['srch_id']) 
+df.to_csv("random_samples_"+str(samples)+".csv")
