@@ -110,28 +110,61 @@ def process(df):
         stat.append(average(sdf['prop_review_score'],weight, 0))
         
         
-        '''
-        stat.append(sdf[sdf['prop_log_historical_price']>0]['prop_log_historical_price'].mean())            # log of mean price when sold (not sold= 0)
-        stat.append(sdf['position'].median())                           # hotel country ID (ONLY IN TRAINSET)
-        stat.append(sdf['price_usd'].median())                          # hotel price (differ by country)
-        stat.append(sdf['promotion_flag'].mean())                       # hotel sale price promotion(bool)
-        stat.append(len(sdf['srch_destination_id'].unique())/len(sdf))  # destination hotel search ID
-        stat.append(sdf['srch_length_of_stay'].median())                # search night stay
-        stat.append(sdf['srch_booking_window'].median())                # seacrh booking window
-        stat.append(sdf['srch_adults_count'].median())                  # number of adults
-        stat.append(sdf['srch_children_count'].median())                # number of children
-        stat.append(sdf['srch_room_count'].median())                    # hotel rooms
-        stat.append(sdf['srch_saturday_night_bool'].mean())             # saterday included?
-        stat.append(sdf['srch_query_affinity_score'].mean())            # The log(p) a hotel clicked internet (0 no register)
-        stat.append(sdf['orig_destination_distance'].mean())            # Physical distance hotel-customer (0 = no calculations)
-        stat.append(sdf['random_bool'].iloc[0])                         # random search order displayed? (INTERESTING)
+		 
+        if booked:
+          
+            stat.append(sdf[sdf['booking_bool'] == 1]['prop_log_historical_price'].iloc[0]) #Hotel ID
+            stat.append(sdf[sdf['booking_bool'] == 1]['position'].iloc[0])  
+            stat.append(sdf[sdf['booking_bool'] == 1]['price_usd'].iloc[0])
+            stat.append(sdf[sdf['booking_bool'] == 1]['promotion_flag'].iloc[0])
+            stat.append(sdf[sdf['booking_bool'] == 1]['srch_query_affinity_score'].iloc[0])
+            stat.append(sdf[sdf['booking_bool'] == 1]['orig_destination_distance'].iloc[0])
+
+
+        elif clicked:
+           
+            stat.append(sdf[sdf['click_bool'] == 1]['prop_log_historical_price'].iloc[0])
+            stat.append(sdf[sdf['click_bool'] == 1]['position'].iloc[0])
+            stat.append(sdf[sdf['click_bool'] == 1]['price_usd'].iloc[0])
+            stat.append(sdf[sdf['click_bool'] == 1]['promotion_flag'].iloc[0])
+            stat.append(sdf[sdf['click_bool'] == 1]['srch_query_affinity_score'].iloc[0])
+            stat.append(sdf[sdf['click_bool'] == 1]['orig_destination_distance'].iloc[0])
+
+            
+
+        else:
+            
+            stat.append(average(sdf['prop_log_historical_price'], weight, 0))
+            stat.append(np.nan)
+            stat.append(np.average(sdf['price_usd']))
+            stat.append(np.round(np.average(sdf['promotion_flag'])))
+            stat.append(np.average(sdf['srch_query_affinity_score']))
+            stat.append(np.average(sdf['orig_destination_distance']))
+            
+            
+     
+        stat.append(sdf['srch_destination_id'].iloc[0])
+        stat.append(sdf['srch_length_of_stay'].iloc[0])
+        stat.append(sdf['srch_booking_window'].iloc[0])
+        stat.append(sdf['srch_adults_count'].iloc[0])
+        stat.append(sdf['srch_children_count'].iloc[0])
+        stat.append(sdf['srch_room_count'].iloc[0])
+        stat.append(sdf['srch_saturday_night_bool'].iloc[0])
+        stat.append(sdf['random_bool'].iloc[0])
         
-        stat_col2 = ['prop_location_score1', 'prop_location_score2', 'prop_log_historical_price',
-            'position', 'price_usd', 'promotion_flag', 'srch_destination_id', 'srch_length_of_stay',
-            'srch_booking_window', 'srch_adults_count', 'srch_children_count', 'srch_room_count',
-            'srch_saturday_night_bool', 'srch_query_affinity_score', 'orig_destination_distance',
-            'random_bool']         
-        '''
+        
+        # average columns
+        stat.append(average(sdf['prop_log_historical_price'],weight, 0))
+        stat.append(average(sdf['price_usd'],weight, None))
+        stat.append(average(sdf['srch_query_affinity_score'],weight, None))
+        stat.append(average(sdf['orig_destination_distance'],weight, None))
+        
+        stat_col3 = ['prop_log_historical_price', 'position', 'price_usd', 'promotion_flag', 'srch_query_affinity_score',
+            'orig_destination_distance', 'srch_destination_id', 'srch_length_of_stay', 'srch_booking_window', 'srch_adults_count', 
+            'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool', 'random_bool', 'prop_log_historical_price_avg', 
+            'price_usd_avg', 'srch_query_affinity_score_avg', 'orig_destination_distance_avg']
+ 
+     
 
         '''
         stat.append(sdf['comp1_rate'].mean())                           # price competition (1=better, 0=none, -1=bad)
@@ -173,10 +206,9 @@ def process(df):
             'click_bool', 'gross_bookings_usd', 'booking_bool']
         '''
         
-        search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2))
+        search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col3))
     #search_ids.append(pd.DataFrame(stat, index = stat_col1 + stat_col2 + stat_col3))
-    test = pd.concat(search_ids,axis = 1).T
-    print test
+
     return pd.concat(search_ids,axis = 1).T
 
 # function read in data and process chunks to combine afterwords
