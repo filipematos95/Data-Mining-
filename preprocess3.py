@@ -204,6 +204,7 @@ def make_data(filename, chunksize = 100000):
     index = pd.DataFrame(meta1 + meta2 + meta3 + meta4, index= new_data[0].columns).T
     extra = index.copy()
     extra[extra != np.nan] = np.nan
+    extra.iloc[0,2] = 'c'
     new_data = [index] + [extra] + new_data
         
     result = pd.concat(new_data, axis = 0)
@@ -221,6 +222,6 @@ else:
 
 
 new = make_data(filename, chunksize = chunksize)
-new.to_csv('processed.csv', index =False)
+new.to_csv('preprocess_total.csv', index =False)
 
 
