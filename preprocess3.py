@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import copy as copy
 #%matplotlib inline
 
 
@@ -190,17 +191,36 @@ def process(df):
 # function read in data and process chunks to combine afterwords
 def make_data(filename, chunksize = 100000):
     new_data = []
+
+    # new_data.append()
     for df in pd.read_csv(filename, chunksize=chunksize):
         new_data.append(process(df))
+        
+    # orange row
+    meta1 = ['d', 'c','d', 'd','d', 'c', 'c', 'd','d', 'c','c', 'c','c', 'c','d', 'd'] # discrete (d), continuous (c), string (s)
+    meta2 = ['d', 'c','d', 'c','c', 'c', 'c', 'c','c', 'd','c', 'c','c']    
+    meta3 = ['c', 'c','c', 'c','c', 'c', 'c', 'c']
+    meta4 = ['c', 'c','c', 'c']
+    index = pd.DataFrame(meta1 + meta2 + meta3 + meta4, index= new_data[0].columns).T
+    extra = index.copy()
+    extra[extra != np.nan] = np.nan
+    new_data = [index] + [extra] + new_data
+        
     result = pd.concat(new_data, axis = 0)
     return result
 
 
+chunksize = 100000
 if len(sys.argv) > 1: 
     filename = sys.argv[1]
+    if len(sys.argv) > 2: 
+        chunksize = int(sys.argv[2])
+
 else:
     print("specify filename plz")
 
-new = make_data(filename, chunksize =100000)
-new.to_csv('preprocessed.csv', index =False)
+
+new = make_data(filename, chunksize = chunksize)
+new.to_csv('processed.csv', index =False)
+
 
