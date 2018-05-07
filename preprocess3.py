@@ -59,7 +59,7 @@ def process(df):
     for search_id in df['srch_id'].unique():
         
         #Get the data for one search_id
-        sdf = df[df['srch_id']==search_id]
+        sdf = df[df['srch_id'] == search_id]
         sdf = sdf.sort_values(by = ['position']) 
 
         #Computes the wieghtseach 
@@ -74,6 +74,7 @@ def process(df):
         stat = []
         stat.append(search_id)    
         stat.append(len(sdf))
+        
         if booked:
     	    stat.append(1)
         else:
@@ -98,10 +99,10 @@ def process(df):
         
         stat_col1 = ['srch_id', 'rows', 'booked', 'clicked', 'visitor_location_country_id', 'visitor_hist_starrating',
             'visitor_hist_adr_usd', 'prop_country_id', 'srch_destination_id', 'srch_length_of_stay', 'srch_booking_window',
-            'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool', 'random_bool']
+            'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool', 'random_bool','booked_&_clicked']
         
         if booked:
-          
+            stat.append(2)
             stat.append(sdf[sdf['booking_bool'] == 1]['prop_id'].iloc[0]) #Hotel ID
             stat.append(first(sdf[(sdf['booking_bool'] == 1) & (sdf['prop_starrating']!=0)]['prop_starrating']))
             stat.append(sdf[(sdf['booking_bool'] == 1) ]['prop_brand_bool'].iloc[0])
@@ -117,7 +118,7 @@ def process(df):
             stat.append(sdf[sdf['booking_bool'] == 1]['gross_bookings_usd'].iloc[0])
 
         elif clicked:
-           
+            stat.append(1)
             stat.append(sdf[sdf['click_bool'] == 1]['prop_id'].iloc[0])
             stat.append(average(sdf[(sdf['click_bool'] == 1) & (sdf['prop_starrating']!=0) ]['prop_starrating'],weight,None))
             stat.append(np.round(np.average(sdf[sdf['click_bool'] == 1]['prop_brand_bool'])))
@@ -133,7 +134,7 @@ def process(df):
             stat.append(sdf[sdf['click_bool'] == 1]['gross_bookings_usd'].iloc[0])
 
         else:
-
+            stat.append(0)
             stat.append(sdf['prop_id'].iloc[0])
             stat.append(average(sdf['prop_starrating'], weight, 0))
             stat.append(np.round(average(sdf['prop_brand_bool'],weight,None)))
@@ -197,10 +198,11 @@ def make_data(filename, chunksize = 100000):
         new_data.append(process(df))
         
     # orange row
-    meta1 = ['d', 'c','d', 'd','d', 'c', 'c', 'd','d', 'c','c', 'c','c', 'c','d', 'd'] # discrete (d), continuous (c), string (s)
-    meta2 = ['d', 'c','d', 'c','c', 'c', 'c', 'c','c', 'd','c', 'c','c']    
-    meta3 = ['c', 'c','c', 'c','c', 'c', 'c', 'c']
-    meta4 = ['c', 'c','c', 'c']
+    meta1 = ['d','c','d','d','d','c','c','d','d','c','c','c','c','c','d','d','d'] # discrete (d), continuous (c), string (s)
+    meta2 = ['d','c','d','c','c','c','c','c','c', 'd','c', 'c','c']    
+    meta3 = ['c','c','c','c','c','c','c','c']
+    meta4 = ['c','c','c','c']
+    
     index = pd.DataFrame(meta1 + meta2 + meta3 + meta4, index= new_data[0].columns).T
     extra = index.copy()
     extra[extra != np.nan] = np.nan
@@ -222,6 +224,6 @@ else:
 
 
 new = make_data(filename, chunksize = chunksize)
-new.to_csv('preprocess_total.csv', index =False)
+new.to_csv(filename[:-4]+'_preprocessed.csv', index =False)
 
 
