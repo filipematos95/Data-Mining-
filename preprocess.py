@@ -14,17 +14,12 @@ import matplotlib.pyplot as plt
 import sys
 #%matplotlib inline
 
-
-
 """
 File reads in data by chunks to compress search id to one row.
 
 """
 
-
-
 ###################################### readin data ########################################
-
 
 
 # help functions to take average over a series
@@ -38,7 +33,6 @@ def average(feature, w, exclude = None):
         if len(feature) > 0:
             return np.average(feature, weights=w[0:len(feature)]).item()
     return np.nan
-
 
 # function that returns nan if empty and elsethefirst element
 def first(s):
@@ -82,7 +76,7 @@ def process(df):
         if book:
 
             stat.append(sdf[ sdf['booking_bool'] == 1 ]['prop_id'].item())                                         
-            stat.append( first(sdf[ (sdf['booking_bool']==1) & (sdf['prop_starrating']!=0)]['prop_starrating']) ) 
+            stat.append(first(sdf[ (sdf['booking_bool']==1) & (sdf['prop_starrating']!=0)]['prop_starrating']) ) 
             stat.append(sdf[ (sdf['booking_bool']==1) ]['prop_brand_bool'].item())
             stat.append(sdf[ sdf['booking_bool']==1 ]['prop_location_score1'].item())
             stat.append(sdf[ sdf['booking_bool']==1 ]['prop_location_score2'].item())
@@ -91,26 +85,26 @@ def process(df):
         elif click:
            
             stat.append(sdf[ sdf['click_bool'] == 1 ].loc[0,'prop_id'].item())                                   
-            stat.append( first( sdf[(sdf['click_bool']==1) & (sdf['prop_starrating']!=0) ]['prop_starrating']))
+            stat.append(first( sdf[(sdf['click_bool']==1) & (sdf['prop_starrating']!=0) ]['prop_starrating']))
             stat.append(sdf[ sdf['click_bool']==1 ]['prop_brand_bool'].iloc[0].item())
-            stat.append( first(sdf[(sdf['booking_bool']==1) & (sdf['prop_location_score1']!=0)]['prop_location_score1']))
-            stat.append( first(sdf[(sdf['booking_bool']==1) & (sdf['prop_location_score2']!=0) ]['prop_location_score2'])) 
-            stat.append( first(sdf[(sdf['booking_bool']==1) & (sdf['prop_review_score']!=0) ]['prop_review_score']))
+            stat.append(first(sdf[(sdf['booking_bool']==1) & (sdf['prop_location_score1']!=0)]['prop_location_score1']))
+            stat.append(first(sdf[(sdf['booking_bool']==1) & (sdf['prop_location_score2']!=0) ]['prop_location_score2'])) 
+            stat.append(first(sdf[(sdf['booking_bool']==1) & (sdf['prop_review_score']!=0) ]['prop_review_score']))
 
         else:
 
             stat.append(sdf['prop_id'].iloc[0].item())                                                            
-            stat.append( average(sdf['prop_starrating'], weight, 0) )
-            stat.append( round(average(sdf['prop_brand_bool'], weight, None)) )
-            stat.append( average(sdf['prop_location_score1'], weight, None) )
-            stat.append( average(sdf['prop_location_score2'], weight, None) )
-            stat.append( average(sdf['prop_review_score'], weight, 0) )
+            stat.append(average(sdf['prop_starrating'], weight, 0))
+            stat.append(round(average(sdf['prop_brand_bool'], weight, None)))
+            stat.append(average(sdf['prop_location_score1'], weight, None))
+            stat.append(average(sdf['prop_location_score2'], weight, None))
+            stat.append(average(sdf['prop_review_score'], weight, 0))
         
         # add some averages
-        stat.append( average(sdf['prop_starrating'], weight, 0) )
-        stat.append( average(sdf['prop_location_score1'], weight, None) )
-        stat.append( average(sdf['prop_location_score2'], weight, None) )
-        stat.append( average(sdf['prop_review_score'], weight, 0) )
+        stat.append(average(sdf['prop_starrating'], weight, 0))
+        stat.append(average(sdf['prop_location_score1'], weight, None))
+        stat.append(average(sdf['prop_location_score2'], weight, None))
+        stat.append(average(sdf['prop_review_score'], weight, 0))
 
         stat_col2 = ['prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2', 'prop_review_score',
             'prop_starrating_avg', 'prop_location_score1_avg', 'prop_location_score2_avg', 'prop_review_score_avg']

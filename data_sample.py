@@ -16,6 +16,9 @@ else:
 	print("Please spicify the size of the sample you want")
 	print("Using default 1000")
 
-df = pd.read_csv(filename, nrows = samples) 
-df = df.sort_values(by = ['srch_id']) 
-df.to_csv("random_samples_"+str(samples)+".csv")
+print "Using: " +  str(samples) + ' samples'
+train_test = pd.read_csv(filename, nrows = samples) 
+train_test = train_test.sort_values(by = ['srch_id']) 
+
+train_test.to_csv("train_test_samples_"+str(samples)+".csv")
+
