@@ -74,7 +74,7 @@ def process(df):
         stat.append(sdf['prop_country_id'].iloc[0])                    # hotel country ID
 
         if booked:
-          
+
             stat.append(sdf[sdf['booking_bool'] == 1]['prop_id'].iloc[0]) #Hotel ID
             stat.append(sdf[(sdf['booking_bool'] == 1) & (sdf['prop_starrating']!=0)]['prop_starrating'].iloc[0])
             stat.append(sdf[(sdf['booking_bool'] == 1) ]['prop_brand_bool'].iloc[0])
