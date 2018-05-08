@@ -28,9 +28,9 @@ def score(ex):
     ex['booked'] = 5*ex['booked']
     ex['points'] = ex[['booked', 'clicked']].apply(max, axis = 1) 
     ex[['booked', 'clicked']].apply(np.max, axis = 1)
-    ex['ndcg'] = ex.sort_values(['pred'],ascending=True).groupby('Search_id')['points'].apply(ndcg_at_k)
-    return ex[['Search_id', 'ndcg']].dropna()
-
+    ex = ex.sort_values(['srch_id', 'pred'],ascending=[True, False]) # ascending=True)
+    score_ndcg = ex.groupby('srch_id').apply(lambda x: ndcg_at_k(x['points'].values))
+    return score_ndcg
 
 
 # The below functions were taken from -> credits: https://gist.github.com/bwhite/3726239 (fixed version a bit)
@@ -73,6 +73,6 @@ print('file will be written to score.csv')
 pred = pd.read_csv(filename)
 
 temp = score(pred)
-print('The obtained average normalized discounted cumulative gain: ', np.mean(temp['ndcg']), ' (std = ', temp['ndcg'].std(), ').')
+print('The obtained average normalized discounted cumulative gain: ', np.mean(temp), ' (std = ', np.std(temp), ').')
 temp.to_csv('score.csv', index =False)
 
