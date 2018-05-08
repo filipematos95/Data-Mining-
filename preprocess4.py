@@ -247,11 +247,11 @@ def process(df):
         stat_n.append(sdf_n[diff].min().min())  # % differences price competition
         stat_n.append(sdf_n[diff].max().max())
     	
-        stat_col4 = ['comp_rate', 'comp_inv', 'comp_rate_percent_diff_min', 'comp_rate_percent_diff_min']
+        stat_col4 = ['comp_rate', 'comp_inv', 'comp_rate_percent_diff_min', 'comp_rate_percent_diff_max']
         
         search_ids_p.append(pd.DataFrame(stat_p,index = stat_col1+stat_col2+stat_col4)) # + stat_col3))
         search_ids_n.append(pd.DataFrame(stat_n,index = stat_col1+stat_col2+stat_col4)) # + stat_col3))
-        total_search_id = search_ids_p + search_ids_p
+        total_search_id = search_ids_p + search_ids_n
 
     return pd.concat(total_search_id,axis = 1).T
 
