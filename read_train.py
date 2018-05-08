@@ -16,7 +16,7 @@ import copy
 File reads in train data to test!!!!!
 """
 
-train = pd.read_csv('training_set_VU_DM_2014.csv', skiprows=range(1, 1000000),nrows=1000)
+train = pd.read_csv('training_set_VU_DM_2014.csv', skiprows=range(1, 2000000),nrows=100000)
 
 # normal stuff (we excluded 'site_id' form train set somehow)
 normal = ['srch_id', 'visitor_location_country_id', 'visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_country_id',
@@ -53,7 +53,9 @@ extra = index.copy()
 
 extra[extra != np.nan] = np.nan
 result = pd.concat([index, extra, df], axis = 0)
-
+result=result.rename(columns = {'booking_bool':'booked', 'click_bool':'clicked'})
+result[result['booked']== 0] = 0.0
+result[result['booked']== 1] = 1.0
 result.to_csv('common.csv', index =False)
 
 
