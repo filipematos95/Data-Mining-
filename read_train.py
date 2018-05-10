@@ -53,7 +53,7 @@ extra = index.copy()
 
 extra[extra != np.nan] = np.nan
 result = pd.concat([index, extra, df], axis = 0)
-result=result.rename(columns = {'booking_bool':'booked', 'click_bool':'clicked'})
+result = result.rename(columns = {'booking_bool':'booked', 'click_bool':'clicked'})
 result[result['booked']== 0] = 0.0
 result[result['booked']== 1] = 1.0
 result.to_csv('common.csv', index =False)
