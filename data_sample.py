@@ -5,6 +5,9 @@ import sys
 
 
 filename = "../../training_set_VU_DM_2014.csv"
+
+filename = '../../clean.csv'
+
 samples = 1000
 
 if len(sys.argv) > 1:
@@ -19,4 +22,8 @@ print "Using: " +  str(samples) + ' samples'
 train_test = pd.read_csv(filename, nrows = samples) 
 train_test = train_test.sort_values(by = ['srch_id']) 
 
-train_test.to_csv("train_test_samples_"+str(samples)+".csv")
+train = train_test[:int(0.9*len(train_test))]
+test = train_test[int(-0.1*len(train_test)):]
+
+train.to_csv(train+'_'+str(samples)+'.csv')
+test.to_csv(test+'_'+str(samples)+'.csv')
