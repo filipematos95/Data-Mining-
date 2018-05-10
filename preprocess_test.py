@@ -27,59 +27,64 @@ File reads in data by chunks to compress search id to one row.
 # function processes chunks of read in data frame
 def process(df):
 
-    processed = []
+    
+    search_ids_p = []
 
     # get all unique srch_id and iterate through them
-    for sdf in df:          
-
+    for index, sdf in df.iterrows():        
+        processed = []
         # positive
-        processed.append(sdf['search_id'])
+        processed.append(sdf['srch_id'])
 
-        if booked:
+        if sdf['booking_bool'] == 1:
             processed.append(1)
+            booked = 1
         else:
             processed.append(0)
+            booked = 0
         # clicked
-        if clicked:
+        if sdf['click_bool'] == 1:
             processed.append(1)
+            clicked = 1
         else:
             processed.append(0)
+            clicked = 0
 
-        processed.append(sdf['visitor_location_country_id'].iloc[0])        # costumers country ID
-        processed.append(sdf['visitor_hist_starrating'].iloc[0])            # history mean star rating (NaN else)
-        processed.append(sdf['visitor_hist_adr_usd'].iloc[0])               # mean price earlier booked (NaN else)
-        processed.append(sdf['prop_country_id'].iloc[0])                    # hotel country ID
-        processed.append(sdf['srch_destination_id'].iloc[0])
-        processed.append(sdf['srch_length_of_stay'].iloc[0])
-        processed.append(sdf['srch_booking_window'].iloc[0])
-        processed.append(sdf['srch_adults_count'].iloc[0])
-        processed.append(sdf['srch_children_count'].iloc[0])
-        processed.append(sdf['srch_room_count'].iloc[0])
-        processed.append(sdf['srch_saturday_night_bool'].iloc[0])
-        processed.append(sdf['random_bool'].iloc[0])
+        processed.append(sdf['visitor_location_country_id'])        # costumers country ID
+        processed.append(sdf['visitor_hist_starrating'])            # history mean star rating (NaN else)
+        processed.append(sdf['visitor_hist_adr_usd'])               # mean price earlier booked (NaN else)
+        processed.append(sdf['prop_country_id'])                    # hotel country ID
+        processed.append(sdf['srch_destination_id'])
+        processed.append(sdf['srch_length_of_stay'])
+        processed.append(sdf['srch_booking_window'])
+        processed.append(sdf['srch_adults_count'])
+        processed.append(sdf['srch_children_count'])
+        processed.append(sdf['srch_room_count'])
+        processed.append(sdf['srch_saturday_night_bool'])
+        processed.append(sdf['random_bool'])
         
         stat_col1 = ['srch_id','booked','clicked','visitor_location_country_id','visitor_hist_starrating',
             'visitor_hist_adr_usd', 'prop_country_id', 'srch_destination_id', 'srch_length_of_stay', 'srch_booking_window',
-            'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool', 'random_bool','booked_&_clicked']
+            'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool','random_bool','booked_&_clicked']
         
         if booked or clicked:
             processed.append(1)
         else: 
             processed.append(0)
 
-            processed.append(sdf[sdf['booking_bool'] == 1]['prop_id'].iloc[0])
-            processed.append(first(sdf[(sdf['booking_bool'] == 1) & (sdf['prop_starrating']!=0)]['prop_starrating']))
-            processed.append(sdf[(sdf['booking_bool'] == 1) ]['prop_brand_bool'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['prop_location_score1'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['prop_location_score2'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['prop_review_score'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['prop_log_historical_price'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['position'].iloc[0])  
-            processed.append(sdf[sdf['booking_bool'] == 1]['price_usd'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['promotion_flag'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['srch_query_affinity_score'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['orig_destination_distance'].iloc[0])
-            processed.append(sdf[sdf['booking_bool'] == 1]['gross_bookings_usd'].iloc[0])
+        processed.append(sdf['prop_id'])
+        processed.append(sdf['prop_starrating'])
+        processed.append(sdf['prop_brand_bool'])
+        processed.append(sdf['prop_location_score1'])
+        processed.append(sdf['prop_location_score2'])
+        processed.append(sdf['prop_review_score'])
+        processed.append(sdf['prop_log_historical_price'])
+        processed.append(sdf['position'])  
+        processed.append(sdf['price_usd'])
+        processed.append(sdf['promotion_flag'])
+        processed.append(sdf['srch_query_affinity_score'])
+        processed.append(sdf['orig_destination_distance'])
+        processed.append(sdf['gross_bookings_usd']) 
          
         stat_col2 = ['prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2',
             'prop_review_score', 'prop_log_historical_price', 'position', 'price_usd', 'promotion_flag', 'srch_query_affinity_score',
@@ -110,15 +115,15 @@ def process(df):
                 'comp7_rate_percent_diff', 'comp8_rate_percent_diff']
     
         # positives
-        processed.append(sdf[rate].mean().mean()) # price competition (1=better, 0=none, -1=bad)
-        processed.append(sdf[inv].mean().mean())  # availibility competition (1=better, 0=same)
-        processed.append(sdf[diff].min().min())  # % differences price competition
-        processed.append(sdf[diff].max().max())
+        processed.append(sdf[rate].mean()) # price competition (1=better, 0=none, -1=bad)
+        processed.append(sdf[inv].mean())  # availibility competition (1=better, 0=same)
+        processed.append(sdf[diff].min())  # % differences price competition
+        processed.append(sdf[diff].max())
     	
         stat_col4 = ['comp_rate', 'comp_inv', 'comp_rate_percent_diff_min', 'comp_rate_percent_diff_max']
         
         search_ids_p.append(pd.DataFrame(processed,index = stat_col1+stat_col2+stat_col4)) # + stat_col3))
-        total_search_id = search_ids_p + search_ids_n
+    total_search_id = search_ids_p 
 
     return pd.concat(total_search_id,axis = 1).T
 
@@ -132,7 +137,7 @@ def make_data(filename, chunksize = 100000):
         search_ids.append(process(df))
 
     # orange row
-    meta1 = ['d','c','d','d','d','c','c','d','d','c','c','c','c','c','d','d','d'] # discrete (d), continuous (c), string (s)
+    meta1 = ['d','c','c','d','c','c','d','d','c','c','c','c','c','d','c','d'] # discrete (d), continuous (c), string (s)
     meta2 = ['d','c','d','c','c','c','c','c','c', 'd','c', 'c','c']    
     #meta3 = ['c','c','c','c','c','c','c','c']
     meta4 = ['c','c','c','c']
@@ -158,6 +163,6 @@ else:
 
 
 new = make_data(filename, chunksize = chunksize)
-new.to_csv(filename[:-4]+'_preprocessed4.csv', index =False)
+new.to_csv(filename[:-4]+'_preprocessed.csv', index =False)
 
 

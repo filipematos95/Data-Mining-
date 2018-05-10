@@ -21,11 +21,7 @@ import copy as copy
 File reads in data by chunks to compress search id to one row.
 """
 
-
-
 ###################################### readin data ########################################
-
-
 
 # help functions to take average over a series
 def average(feature, w, exclude = None):
@@ -250,8 +246,8 @@ def process(df):
         
         search_ids_p.append(pd.DataFrame(stat_p,index = stat_col1+stat_col2+stat_col4)) # + stat_col3))
         search_ids_n.append(pd.DataFrame(stat_n,index = stat_col1+stat_col2+stat_col4)) # + stat_col3))
-        total_search_id = search_ids_p + search_ids_n
-
+    
+    total_search_id = search_ids_p + search_ids_n
     return pd.concat(total_search_id,axis = 1).T
 
 
