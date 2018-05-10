@@ -68,8 +68,6 @@ def process(df):
         booked = sdf['booking_bool'].max() == 1
         clicked = sdf['click_bool'].max() == 1
 
-
-
         #Make an list with statistics for  search
         stat = []
         stat.append(search_id)    
@@ -79,6 +77,7 @@ def process(df):
     	    stat.append(1)
         else:
             stat.append(0)
+
         if clicked:
             stat.append(1)
         else:
@@ -202,7 +201,7 @@ def make_data(filename, chunksize = 100000):
     meta2 = ['d','c','d','c','c','c','c','c','c', 'd','c', 'c','c']    
     meta3 = ['c','c','c','c','c','c','c','c']
     meta4 = ['c','c','c','c']
-    
+
     index = pd.DataFrame(meta1 + meta2 + meta3 + meta4, index= new_data[0].columns).T
     extra = index.copy()
     extra[extra != np.nan] = np.nan
