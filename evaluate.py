@@ -62,13 +62,13 @@ def ndcg_at_k(r):
 ###################################### read filename and output dataframe ########################################
 
 
-
 if len(sys.argv) > 1: 
     filename = sys.argv[1]
 else:
-    print('plz specify filename, example is loaded instead')
+    print('Please specify filename, example is loaded instead')
     filename = 'ex.csv'
-print('file will be written to score.csv')
+    
+print('File will be written to score.csv')
     
 pred = pd.read_csv(filename)
 

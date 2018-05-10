@@ -63,7 +63,6 @@ def process(df):
         sdf = df[df['srch_id'] == search_id]
         sdf = sdf.sort_values(by = ['position']) 
 
-        
         # get example data of non booking
         sdf_n = sdf.copy().sort_values(by = ['position'], ascending = False) 
         
