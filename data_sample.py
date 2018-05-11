@@ -25,5 +25,5 @@ train_test = train_test.sort_values(by = ['srch_id'])
 train = train_test[:int(0.9*len(train_test))]
 test = train_test[int(-0.1*len(train_test)):]
 
-train.to_csv(train+'_'+str(samples)+'.csv')
-test.to_csv(test+'_'+str(samples)+'.csv')
+train.to_csv('train'+'_'+str(samples)+'.csv')
+test.to_csv('test'+'_'+str(samples)+'.csv')
