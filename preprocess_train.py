@@ -64,9 +64,9 @@ def booked_clicked(sdf,means):
     stat_p.append(sdf['srch_id'])   
     stat_p.append(sdf['booking_bool']) 
     stat_p.append(sdf['click_bool']) 
-    stat_p.append(sdf['visitor_location_country_id'])        # costumers country ID
-    stat_p.append(sdf['visitor_hist_starrating'])            # NEEDS to BE SOLVED
-    stat_p.append(sdf['visitor_hist_adr_usd'])               # NEEDS TO BE SOLVED
+    stat_p.append(sdf['visitor_location_country_id'])        
+    stat_p.append(sdf['visitor_hist_starrating'])            
+    stat_p.append(sdf['visitor_hist_adr_usd'])               
     stat_p.append(sdf['prop_country_id'])                    
     stat_p.append(sdf['srch_destination_id'])
     stat_p.append(sdf['srch_length_of_stay'])
@@ -187,7 +187,7 @@ def process(df):
 
         book = sdf[sdf['booking_bool'] == 1]
         click = sdf[ (sdf['booking_bool'] == 0) & (sdf['click_bool'] == 1)]
-        neg = sdf[sdf['click_bool'] == 1]   
+        neg = sdf[sdf['click_bool'] == 1] 
         
         #Computes the wieghtseach 
         weight = np.linspace(len(neg),0,len(neg))
@@ -207,17 +207,17 @@ def process(df):
         for index,sdf in click.iterrows():
             stat = booked_clicked(sdf,means)
             search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
-
-        stat = not_clicked(neg,weight)
+        
+        if neg:
+            stat = not_clicked(neg,weight)
         search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
         #for index,sdf in neg.iterrows():
-
 
     return pd.concat(search_ids,axis = 1).T
 
 
 # function read in data and process chunks to combine afterwords
-def make_data(filename, chunksize = 100000):
+def make_data(df, chunksize = 1000000):
     
     search_ids = []
 
@@ -240,7 +240,7 @@ def make_data(filename, chunksize = 100000):
     return result
 
 
-chunksize = 100000
+chunksize = 1000000
 if len(sys.argv) > 1: 
     filename = sys.argv[1]
     if len(sys.argv) > 2: 
@@ -248,6 +248,10 @@ if len(sys.argv) > 1:
 
 else:
     print("specify filename plz")
+
+
+filename = 'c:/Users/b_daan/Desktop/dm/data/clean.csv'
+new = make_data(filename, chunksize = chunksize)
 
 
 new = make_data(filename, chunksize = chunksize)
