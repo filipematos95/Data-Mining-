@@ -208,9 +208,9 @@ def process(df):
             stat = booked_clicked(sdf,means)
             search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
         
-        if neg:
+        if len(neg) >0:
             stat = not_clicked(neg,weight)
-        search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
+            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
         #for index,sdf in neg.iterrows():
 
     return pd.concat(search_ids,axis = 1).T
