@@ -3,18 +3,15 @@
 #               Group 24                #
 #               (2018)                  #
 #           Vrije Universiteit          #
-#           data exploration            #
+#          preprocess testdata          #
 #                                       #
 #########################################
 
 import itertools
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import sys
 import copy as copy
-#%matplotlib inline
-
 
 
 """
@@ -22,18 +19,14 @@ File reads in data by chunks to compress search id to one row.
 """
 
 
-
-###################################### readin data ########################################
-
-
 def booked_clicked(sdf,means):
     stat_p = []
     stat_p.append(sdf['srch_id'])   
     stat_p.append(sdf['booking_bool']) 
     stat_p.append(sdf['click_bool']) 
-    stat_p.append(sdf['visitor_location_country_id'])        # costumers country ID
-    stat_p.append(sdf['visitor_hist_starrating'])            # NEEDS to BE SOLVED
-    stat_p.append(sdf['visitor_hist_adr_usd'])               # NEEDS TO BE SOLVED
+    stat_p.append(sdf['visitor_location_country_id'])        
+    stat_p.append(sdf['visitor_hist_starrating'])            
+    stat_p.append(sdf['visitor_hist_adr_usd'])               
     stat_p.append(sdf['prop_country_id'])                    
     stat_p.append(sdf['srch_destination_id'])
     stat_p.append(sdf['srch_length_of_stay'])
@@ -67,7 +60,6 @@ def booked_clicked(sdf,means):
         stat_p.append(means[1])
     else:
         stat_p.append(sdf['prop_review_score'])
-
     
     stat_p.append(sdf['prop_log_historical_price'])
     stat_p.append(sdf['position'])  
@@ -105,12 +97,10 @@ def process(df):
     search_ids = []
     for search_id in df['srch_id'].unique():
 
-        #Get the data for one search_id
+        # Get the data for one search_id
         sdf = df[df['srch_id'] == search_id]
-        sdf = sdf.sort_values(by = ['position']) 
         
-        #Computes the wieghtseach 
-
+        # Computes the weights 
         prop_starrating_mean = sdf['prop_starrating'].mean()
         prop_review_score_mean = sdf['prop_review_score'].mean()
         prop_location_score2_mean = sdf['prop_location_score2'].mean()
@@ -118,7 +108,7 @@ def process(df):
 
         means = [prop_starrating_mean,prop_review_score_mean,prop_location_score2_mean,prop_location_score1_mean]
 
-        #Make an list with statistics for  search
+        # Make an list with statistics for  search
         for index, sdf in sdf.iterrows():
             stat = booked_clicked(sdf,means)
             search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
@@ -140,7 +130,6 @@ def make_data(filename, chunksize = 100000):
     # orange row
     meta1 = ['d','d','d','d','c','c','d','d','c','c','c','c','c','d','d','d'] # discrete (d), continuous (c), string (s)
     meta2 = ['d','c','d','c','c','c','c','c','c','d','c','c','c']    
-    #meta3 = ['c','c','c','c','c','c','c','c']
     meta4 = ['c','c','c','c','c'] 
     
     
