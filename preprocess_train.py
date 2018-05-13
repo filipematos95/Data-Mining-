@@ -21,11 +21,7 @@ import copy as copy
 File reads in data by chunks to compress search id to one row.
 """
 
-
-
 ###################################### readin data ########################################
-
-
 
 # help functions to take average over a series
 def average(feature, w, exclude = None):
@@ -149,7 +145,6 @@ def not_clicked(sdf,weight):
     stat_p.append(np.average(sdf['srch_query_affinity_score']))
     stat_p.append(np.average(sdf['orig_destination_distance']))
     stat_p.append(np.average(sdf['gross_bookings_usd']))  
-
     stat_p.append(sdf['rate_sum'].mean()) # price competition (1=better, 0=none, -1=bad)
     stat_p.append(sdf['inv_sum'].mean()) # availibility competition (1=better, 0=same)
     stat_p.append(sdf['diff_mean'].mean())  # % differences price competition
@@ -247,10 +242,9 @@ if len(sys.argv) > 1:
         chunksize = int(sys.argv[2])
 
 else:
-    print("specify filename plz")
+    print("Please speficiy the filename")
 
 
-filename = 'c:/Users/b_daan/Desktop/dm/data/clean.csv'
 new = make_data(filename, chunksize = chunksize)
 
 
