@@ -55,7 +55,7 @@ diff = ['comp1_rate_percent_diff', 'comp2_rate_percent_diff', 'comp3_rate_percen
         'comp4_rate_percent_diff', 'comp5_rate_percent_diff', 'comp6_rate_percent_diff',
         'comp7_rate_percent_diff', 'comp8_rate_percent_diff']
 
-def booked_clicked(sdf,means):
+def noavg(sdf,means,clicked):
     stat_p = []
     stat_p.append(sdf['srch_id'])   
     stat_p.append(sdf['booking_bool']) 
@@ -72,7 +72,7 @@ def booked_clicked(sdf,means):
     stat_p.append(sdf['srch_room_count'])
     stat_p.append(sdf['srch_saturday_night_bool'])
     stat_p.append(sdf['random_bool'])
-    stat_p.append(1)
+    stat_p.append(clicked)
     stat_p.append(sdf['prop_id'])
 
     if np.isnan(sdf['prop_starrating']) or sdf['prop_starrating'] == 0: 
@@ -182,7 +182,7 @@ def process(df):
 
         book = sdf[sdf['booking_bool'] == 1]
         click = sdf[ (sdf['booking_bool'] == 0) & (sdf['click_bool'] == 1)]
-        neg = sdf[sdf['click_bool'] == 1] 
+        neg = sdf[sdf['click_bool'] == 0] 
         
         #Computes the wieghtseach 
         weight = np.linspace(len(neg),0,len(neg))
@@ -196,16 +196,20 @@ def process(df):
 
         #Make an list with statistics for  search
         for index, sdf in book.iterrows():
-            stat = booked_clicked(sdf,means)
+            stat = noavg(sdf,means,1)
             search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
 
         for index,sdf in click.iterrows():
-            stat = booked_clicked(sdf,means)
+            stat = noavg(sdf,means,1)
             search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
         
-        if len(neg) >0:
-            stat = not_clicked(neg,weight)
-            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
+        for index,sdf in neg.tail(3).iterrows():
+            stat = noavg(sdf,means,0)
+            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
+
+        #if len(neg) >0:
+        #    stat = not_clicked(neg,weight)
+        #    search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
         #for index,sdf in neg.iterrows():
 
     return pd.concat(search_ids,axis = 1).T
@@ -249,6 +253,6 @@ new = make_data(filename, chunksize = chunksize)
 
 
 new = make_data(filename, chunksize = chunksize)
-new.to_csv(filename[:-4]+'_preprocessed.csv', index =False)
+new.to_csv(filename[:-4]+'_preprocessed_noavg.csv', index =False)
 
 
