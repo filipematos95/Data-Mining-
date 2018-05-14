@@ -180,8 +180,8 @@ def process(df):
         sdf = df[df['srch_id'] == search_id]
         sdf = sdf.sort_values(by = ['position']) 
 
-        book = sdf[sdf['booking_bool'] == 1]
-        click = sdf[ (sdf['booking_bool'] == 0) & (sdf['click_bool'] == 1)]
+        #book = sdf[sdf['booking_bool'] == 1]
+        click = sdf[sdf['click_bool'] == 1]
         neg = sdf[sdf['click_bool'] == 0] 
         
         #Computes the wieghtseach 
@@ -195,22 +195,21 @@ def process(df):
         means = [prop_starrating_mean,prop_review_score_mean,prop_location_score2_mean,prop_location_score1_mean]
 
         #Make an list with statistics for  search
-        for index, sdf in book.iterrows():
-            stat = noavg(sdf,means,1)
-            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
+        #for index, sdf in book.iterrows():
+        #    stat = noavg(sdf,means,1)
+        #    search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
 
         for index,sdf in click.iterrows():
             stat = noavg(sdf,means,1)
             search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
         
-        for index,sdf in neg.tail(3).iterrows():
-            stat = noavg(sdf,means,0)
-            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
+        #for index,sdf in neg.tail(3).iterrows():
+        #    stat = noavg(sdf,means,0)
+        #    search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
 
-        #if len(neg) >0:
-        #    stat = not_clicked(neg,weight)
-        #    search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
-        #for index,sdf in neg.iterrows():
+        if len(neg) > 0:
+            stat = not_clicked(neg,weight)
+            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
 
     return pd.concat(search_ids,axis = 1).T
 
@@ -253,6 +252,6 @@ new = make_data(filename, chunksize = chunksize)
 
 
 new = make_data(filename, chunksize = chunksize)
-new.to_csv(filename[:-4]+'_preprocessed_noavg.csv', index =False)
+new.to_csv(filename[:-4]+'_preprocessed.csv', index =False)
 
 
