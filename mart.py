@@ -67,7 +67,7 @@ def data_sets(filename, col, nrows):
 
 
 
-Ty, TX, Tqids, Vy, VX, Tqids, Ey, Ex, Eqids = data_sets(filename, col, nrows)
+Ty, TX, Tqids, Vy, VX, Vqids, Ey, Ex, Eqids = data_sets(filename, col, nrows)
 
 
 VX = VX.fillna(0)
