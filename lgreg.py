@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import Imputer
 
-train_file = 'train_500000_preprocessed_noavg.csv'
-test_file = 'test_500000_preprocessed.csv'
+train_file = 'train_1000000_preprocessed.csv'
+test_file = 'test_1000000_preprocessed.csv'
 
 columns_train = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,22,24,25,26,27,29,30,31,32,33]
 columns_test = columns_train
@@ -18,7 +18,7 @@ NAN = train[train.isnull().any(axis=1)][['srch_id','clicked']]
 train_x = train.drop(['booked','clicked'],axis = 1)
 train_y = train['clicked']
 
-imp_nan = Imputer(missing_values='NaN', strategy='mean', axis=0)
+imp_nan = Imputer(missing_values='NaN', strategy='median', axis=0)
 imp_nan.fit(train_x)
 train_x = imp_nan.transform(train_x)
 
@@ -68,5 +68,4 @@ def score(ex):
 
 temp = score(result).dropna()[['srch_id', 'score']]
 print "NDCG Score: " + str(temp['score'].mean()) 
-
 
