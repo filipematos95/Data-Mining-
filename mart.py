@@ -20,7 +20,7 @@ import pandas as pd
 
 
 
-metric = pyltr.metrics.NDCG(k=20)
+metric = pyltr.metrics.NDCG(k=10)
 
 all_features = ['srch_id', 'site_id', 'visitor_location_country_id',
    'visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_country_id',
