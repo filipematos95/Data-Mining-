@@ -53,9 +53,9 @@ def rate_inv_diff():
 def mean_med_std():
     total = pd.read_csv('c:/Users/b_daan/Desktop/dm/data/total_small.csv')
 
-    num = ['visitor_hist_starrating', 'prop_id','visitor_hist_adr_usd', 'prop_location_score1',
-     'prop_location_score2', 'prop_log_historical_price', 'position', 'price_usd',
-     'promotion_flag', 'srch_destination_id', 'srch_length_of_stay', 'srch_booking_window',
+num = ['visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_location_score1',
+     'prop_location_score2', 'prop_log_historical_price', 'price_usd',
+     'promotion_flag', 'srch_length_of_stay', 'srch_booking_window',
      'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool',
      'srch_query_affinity_score', 'orig_destination_distance', 'prop_starrating']
     
