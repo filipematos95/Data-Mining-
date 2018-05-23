@@ -19,9 +19,12 @@ import re
 """
 features used for training a LabmdaMart model
 - all
-- importance
-- ...
--...
+- importance (around 30)
+- best_5
+- best_10
+- best_15
+- best_20
+- col old used model
 """
 
 all_features = ['booking_bool',
@@ -124,8 +127,6 @@ all_features = ['booking_bool',
  'score1d2',
  'hotel_quality_1',
  'hotel_quality_2'] 
- 
-
 
 importance = [
  'orig_destination_distance',
@@ -175,3 +176,25 @@ importance = [
  'score1d2',
  'hotel_quality_1',
  'hotel_quality_2'] 
+ 
+best_5 = ['hotel_quality_1', 'hotel_quality_2', 'ump', 'price_usd', 'price_usd_med']
+ 
+best_10 = ['hotel_quality_1', 'hotel_quality_2', 'ump', 'price_usd', 'price_usd_med',
+    'per_fee', 'score1d2', 'orig_destination_distance', 'prop_location_score2', 'score2ma']
+
+best_15 = ['hotel_quality_1', 'hotel_quality_2', 'ump', 'price_usd', 'price_usd_med',
+    'per_fee', 'score1d2', 'orig_destination_distance', 'prop_location_score2', 'score2ma',
+    'random_bool', 'total_fee', 'prop_location_score2_mean', 'prop_id', 'price_usd_mean']
+
+best_20 = ['hotel_quality_1', 'hotel_quality_2', 'ump', 'price_usd', 'price_usd_med',
+    'per_fee', 'score1d2', 'orig_destination_distance', 'prop_location_score2', 'score2ma',
+    'random_bool', 'total_fee', 'prop_location_score2_mean', 'prop_id', 'price_usd_mean',
+    'prop_location_score2_med', 'starrating_diff', 'prop_log_historical_price_mean',
+    'promotion_flag_mean', 'prop_location_score2_std']
+    
+# this worked very well score (5.19)
+col = ['hotel_quality_1', 'price_usd_med', 'prop_id', 'hotel_quality_2',
+    'score2ma', 'score1d2', 'price_usd', 'total_fee', 'ump', 'prop_location_score2',
+    'promotion_flag_mean', 'price_usd_mean', 'per_fee', 'prop_log_historical_price',
+    'price_diff', 'promotion_flag', 'rate_sum', 'prop_log_historical_price_med',
+    'prop_country_id', 'starrating_diff', 'prop_location_score2_mean']
