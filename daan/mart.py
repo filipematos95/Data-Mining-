@@ -123,7 +123,6 @@ Epred = model.predict(EX)
 print_stats(model, Epred, Ey, Eqids, sets)
 s = scores(Epred, Eqids, Ey)
 
-# model 1 to determine importance
 save(model, "importance")   
 load('importance')
 
@@ -160,7 +159,6 @@ Epred = model.predict(EX)
 print_stats(model, Epred, Ey, Eqids, sets)
 s = scores(Epred, Eqids, Ey)
 
-# model 1 to determine importance
 save(model, "best_5")   
 load('best_5')
 
@@ -196,7 +194,6 @@ Epred = model.predict(EX)
 print_stats(model, Epred, Ey, Eqids, sets)
 s = scores(Epred, Eqids, Ey)
 
-# model 1 to determine importance
 save(model, "best_10")   
 load('best_10')
 
@@ -233,7 +230,6 @@ Epred = model.predict(EX)
 print_stats(model, Epred, Ey, Eqids, sets)
 s = scores(Epred, Eqids, Ey)
 
-# model 1 to determine importance
 save(model, "best_15")   
 
 # 5. best 20 were used
@@ -268,8 +264,23 @@ Epred = model.predict(EX)
 print_stats(model, Epred, Ey, Eqids, sets)
 s = scores(Epred, Eqids, Ey)
 
-# model 1 to determine importance
 save(model, "best_20")   
 
+#### final predictions
+model = load('best_20')
+filename = 'data/test.csv'
+TX, Tqids, Tprop = test_data(filename, best_20)
+TX = fill_data_test(TX)
+TXa, Tqidse = to_array_test(TX, Tqids)
 
+Tpred = model.predict(TXa)
 
+commit = pd.DataFrame([Tqids, Tprop, Tpred], index = ['SearchId', 'PropertyId', 'pred']).T
+commit_sort = commit.sort_values(['SearchId', 'pred'],ascending=[True, False])
+commit_sort['SearchId'] = commit_sort['SearchId'].astype(int)
+commit_sort['PropertyId'] = commit_sort['PropertyId'].astype(int)
+commit_final = commit_sort[['SearchId', 'PropertyId']]
+commit_final.to_csv('data/commit.csv', index = False)
+
+test = data = pd.read_csv('data/commit.csv')
+test.head()
