@@ -86,7 +86,7 @@ def features(total,filename):
 
     len_train = 4958347
 
-    total.iloc[0:len_train].to_csv(filename[:-4]+'_clean.csv',index = False)
+    total.to_csv(filename[:-4]+'_clean.csv',index = False)
     #total.drop(['click_bool', 'gross_bookings_usd', 'booking_bool', 'position'], axis = 1, inplace = True)
     #total.iloc[len_train:].to_csv('test_clean.csv',index = False)
 
