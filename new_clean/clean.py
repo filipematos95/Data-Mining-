@@ -81,8 +81,8 @@ def features(total,filename):
     total['score2ma'] = total['prop_location_score2'] * total['srch_query_affinity_score_mean']
     total['total_fee'] = total['price_usd'] * total['srch_room_count']
     total['score1d2'] = (total['prop_location_score2'] + 0.0001) / (total['prop_location_score1'] + 0.0001)
-    total['hotel_quality_1'] = total.groupby('prop_id')['click_bool'].transform('mean')
-    total['hotel_quality_2'] = total.groupby('prop_id')['booking_bool'].transform('mean')
+    #total['hotel_quality_1'] = total.groupby('prop_id')['click_bool'].transform('mean')
+    #total['hotel_quality_2'] = total.groupby('prop_id')['booking_bool'].transform('mean')
 
     len_train = 4958347
 
