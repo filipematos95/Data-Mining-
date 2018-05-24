@@ -37,8 +37,8 @@ def rate_inv_diff():
         'comp7_rate_percent_diff', 'comp8_rate_percent_diff'] 
     
     total['rate_sum'] = total[rate].sum(axis=1)
-    total['inv_sum'] = total[rate].sum(axis=1)
-    total['diff_mean'] = total[rate].mean(axis=1)
+    total['inv_sum'] = total[inv].sum(axis=1)
+    total['diff_mean'] = total[diff].mean(axis=1)
     total['rate_abs'] = total[rate].min(axis=1)
     total['inv_abs'] = total[inv].min(axis=1)
 
