@@ -23,8 +23,8 @@ File reads in data by chunks to compress search id to one row.
 def booked_clicked(sdf,means):
     stat_p = []
     stat_p.append(sdf['srch_id'])   
-    stat_p.append(sdf['booking_bool']) 
-    stat_p.append(sdf['click_bool']) 
+    #stat_p.append(sdf['booking_bool']) 
+    #stat_p.append(sdf['click_bool']) 
     stat_p.append(sdf['visitor_location_country_id'])        
     stat_p.append(sdf['visitor_hist_starrating'])            
     stat_p.append(sdf['visitor_hist_adr_usd'])               
@@ -62,12 +62,12 @@ def booked_clicked(sdf,means):
         stat_p.append(sdf['prop_review_score'])
     
     stat_p.append(sdf['prop_log_historical_price'])
-    stat_p.append(sdf['position'])  
+    #stat_p.append(sdf['position'])  
     stat_p.append(sdf['price_usd'])
     stat_p.append(sdf['promotion_flag'])
     stat_p.append(sdf['srch_query_affinity_score'])
     stat_p.append(sdf['orig_destination_distance'])
-    stat_p.append(sdf['gross_bookings_usd'])
+    #stat_p.append(sdf['gross_bookings_usd'])
 
     stat_p.append(sdf['rate_sum']) # price competition (1=better, 0=none, -1=bad)
     stat_p.append(sdf['inv_sum'])
@@ -81,8 +81,8 @@ def booked_clicked(sdf,means):
     stat_p.append(sdf['score2ma'])
     stat_p.append(sdf['total_fee'])
     stat_p.append(sdf['score1d2'])
-    stat_p.append(sdf['hotel_quality_1'])
-    stat_p.append(sdf['hotel_quality_2'])
+    #stat_p.append(sdf['hotel_quality_1'])
+    #stat_p.append(sdf['hotel_quality_2'])
 
     return stat_p
 
@@ -91,18 +91,25 @@ def process(df):
     
     search_ids_p = []
 
-    stat_col1 = ['srch_id', 'booked', 'clicked', 'visitor_location_country_id', 'visitor_hist_starrating',
+    #stat_col1 = ['srch_id', 'booked', 'clicked', 'visitor_location_country_id', 'visitor_hist_starrating',
+    #        'visitor_hist_adr_usd', 'prop_country_id', 'srch_destination_id', 'srch_length_of_stay', 'srch_booking_window',
+    #        'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool', 'random_bool']
+          
+     
+    stat_col1 = ['srch_id', 'visitor_location_country_id', 'visitor_hist_starrating',
             'visitor_hist_adr_usd', 'prop_country_id', 'srch_destination_id', 'srch_length_of_stay', 'srch_booking_window',
             'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool', 'random_bool']
-          
-         
+   
+    #stat_col2 = ['prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2',
+    #        'prop_review_score', 'prop_log_historical_price', 'position', 'price_usd', 'promotion_flag', 'srch_query_affinity_score',
+    #        'orig_destination_distance', 'gross_bookings_usd']
     stat_col2 = ['prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2',
-            'prop_review_score', 'prop_log_historical_price', 'position', 'price_usd', 'promotion_flag', 'srch_query_affinity_score',
-            'orig_destination_distance', 'gross_bookings_usd']
-
+            'prop_review_score', 'prop_log_historical_price', 'price_usd', 'promotion_flag', 'srch_query_affinity_score',
+            'orig_destination_distance']
+   
     stat_col4 = ['rate_sum', 'inv_sum', 'diff_mean', 'rate_abs','inv_abs']    
 
-    stat_col5 = ['ump','price_diff','starrating_diff','per_fee','score2ma','total_fee','score1d2','hotel_quality_1','hotel_quality_2']
+    stat_col5 = ['ump','price_diff','starrating_diff','per_fee','score2ma','total_fee','score1d2']#,'hotel_quality_1','hotel_quality_2']
 
     # get all unique src
     search_ids = []

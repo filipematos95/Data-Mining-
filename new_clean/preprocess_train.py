@@ -16,9 +16,6 @@ import copy as copy
 from multiprocessing import Pool
 
 #%matplotlib inline
-
-
-
 """
 """
 
