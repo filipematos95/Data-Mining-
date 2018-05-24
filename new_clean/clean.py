@@ -9,22 +9,27 @@
 
 import pandas as pd
 import numpy as np
+import sys
 import matplotlib.pyplot as plt
 
 """
 features added 
 """
+if len(sys.argv) > 1:
+    filename = sys.argv[1]
+else: 
+    "Please specify the filename"
+    filename = "TEST"
 
 # stage one
-def combine():
-    train = pd.read_csv('c:/Users/b_daan/Desktop/dm\data/training_set_VU_DM_2014.csv')
-    test = pd.read_csv('c:/Users/b_daan/Desktop/dm/data/test_set_VU_DM_2014.csv')
-    total = pd.concat([train, test], axis = 0)
-    total.to_csv('c:/Users/b_daan/Desktop/dm/data/total.csv',index = False)
-
+def combine(filename):
+    train = pd.read_csv(filename)
+    #test = pd.read_csv('/Volumes/FILIPE1/Data mIning/Data Mining VU data/test_set_VU_DM_2014.csv')
+    #total = pd.concat([train, test], axis = 0)
+    total = train
+    return total
 # stage two
-def rate_inv_diff():
-    total = pd.read_csv('c:/Users/b_daan/Desktop/dm/data/total.csv')
+def rate_inv_diff(total):
 
     rate = ['comp1_rate', 'comp2_rate', 'comp3_rate', 'comp4_rate', 'comp5_rate', 
             'comp6_rate', 'comp7_rate', 'comp8_rate'] 
@@ -45,14 +50,11 @@ def rate_inv_diff():
     total.drop(rate + inv + diff, axis = 1, inplace = True)
     total.drop('date_time', axis = 1, inplace = True)
     
-    total.to_csv('c:/Users/b_daan/Desktop/dm/data/total_small.csv',index = False)
+    return total
 
+def mean_med_std(total):
 
-# stage three
-def mean_med_std():
-    total = pd.read_csv('c:/Users/b_daan/Desktop/dm/data/total_small.csv')
-
-num = ['visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_location_score1',
+    num = ['visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_location_score1',
      'prop_location_score2', 'prop_log_historical_price', 'price_usd',
      'promotion_flag', 'srch_length_of_stay', 'srch_booking_window',
      'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool',
@@ -67,25 +69,31 @@ num = ['visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_location_score1'
     num_med = [x + "_med" for x in num]
     total[num_med] = total.groupby("prop_id")[num].transform('median')
 
-    total.to_csv('c:/Users/b_daan/Desktop/dm/data/total_bigger.csv',index = False)
     return total
 
 # stage four
-def features():
-    total = pd.read_csv('c:/Users/b_daan/Desktop/dm/data/total_bigger.csv')
+def features(total,filename):
 
     total['ump'] = np.exp(total['prop_log_historical_price']) - total['price_usd']
-    total['price_diff'] = total['visitor_hist_adr_usd_mean'] - total['price_usd_mean'] #took mean anyway (was feeling rebellious)
-    total['starrating_diff'] = total['visitor_hist_starrating_mean'] - total['prop_starrating_mean'] (same)
+    total['price_diff'] = total['visitor_hist_adr_usd_mean'] - total['price_usd_mean']
+    total['starrating_diff'] = total['visitor_hist_starrating_mean'] - total['prop_starrating_mean']
     total['per_fee'] = total['price_usd'] * total['srch_room_count'] / (total['srch_adults_count'] + total['srch_children_count'])
     total['score2ma'] = total['prop_location_score2'] * total['srch_query_affinity_score_mean']
     total['total_fee'] = total['price_usd'] * total['srch_room_count']
     total['score1d2'] = (total['prop_location_score2'] + 0.0001) / (total['prop_location_score1'] + 0.0001)
-    total[['hotel_quality_1'] = total.groupby('prop_id')['click_bool'].transform('mean')
+    total['hotel_quality_1'] = total.groupby('prop_id')['click_bool'].transform('mean')
     total['hotel_quality_2'] = total.groupby('prop_id')['booking_bool'].transform('mean')
 
     len_train = 4958347
 
-    total.iloc[0:len_train].to_csv('c:/Users/b_daan/Desktop/dm/data/train.csv',index = False)
-    total.drop(['click_bool', 'gross_bookings_usd', 'booking_bool', 'position'], axis = 1, inplace = True)
-    total.iloc[len_train:].to_csv('c:/Users/b_daan/Desktop/dm/data/test.csv',index = False)
+    total.iloc[0:len_train].to_csv(filename[:-4]+'_clean.csv',index = False)
+    #total.drop(['click_bool', 'gross_bookings_usd', 'booking_bool', 'position'], axis = 1, inplace = True)
+    #total.iloc[len_train:].to_csv('test_clean.csv',index = False)
+
+    return 0
+
+total = combine(filename)
+mean_med_std(total)
+total = rate_inv_diff(total)
+total = features(total,filename)
+

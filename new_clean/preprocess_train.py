@@ -13,6 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import copy as copy
+from multiprocessing import Pool
+
 #%matplotlib inline
 
 
@@ -44,16 +46,6 @@ def first(s):
     else:
         return s.iloc[0]
 
-rate = ['comp1_rate', 'comp2_rate', 'comp3_rate', 'comp4_rate', 'comp5_rate',
-        'comp6_rate', 'comp7_rate', 'comp8_rate']
-    
-inv = ['comp1_inv', 'comp2_inv', 'comp3_inv', 'comp4_inv', 'comp5_inv', 'comp6_inv', 
-        'comp7_inv', 'comp8_inv']
-    
-diff = ['comp1_rate_percent_diff', 'comp2_rate_percent_diff', 'comp3_rate_percent_diff',
-        'comp4_rate_percent_diff', 'comp5_rate_percent_diff', 'comp6_rate_percent_diff',
-        'comp7_rate_percent_diff', 'comp8_rate_percent_diff']
-
 def noavg(sdf,means,clicked):
     stat_p = []
     stat_p.append(sdf['srch_id'])   
@@ -71,7 +63,6 @@ def noavg(sdf,means,clicked):
     stat_p.append(sdf['srch_room_count'])
     stat_p.append(sdf['srch_saturday_night_bool'])
     stat_p.append(sdf['random_bool'])
-    stat_p.append(clicked)
     stat_p.append(sdf['prop_id'])
 
     if np.isnan(sdf['prop_starrating']) or sdf['prop_starrating'] == 0: 
@@ -95,7 +86,6 @@ def noavg(sdf,means,clicked):
         stat_p.append(means[1])
     else:
         stat_p.append(sdf['prop_review_score'])
-
     
     stat_p.append(sdf['prop_log_historical_price'])
     stat_p.append(sdf['position'])  
@@ -104,12 +94,20 @@ def noavg(sdf,means,clicked):
     stat_p.append(sdf['srch_query_affinity_score'])
     stat_p.append(sdf['orig_destination_distance'])
     stat_p.append(sdf['gross_bookings_usd'])
-
     stat_p.append(sdf['rate_sum']) # price competition (1=better, 0=none, -1=bad)
     stat_p.append(sdf['inv_sum'])
     stat_p.append(sdf['diff_mean'])
     stat_p.append(sdf['rate_abs']) # 0 if there is no comp with lower price otherwise 1
-    stat_p.append(sdf['inv_abs']) # 
+    stat_p.append(sdf['inv_abs']) #
+    stat_p.append(sdf['ump']) 
+    stat_p.append(sdf['price_diff'])
+    stat_p.append(sdf['starrating_diff'])
+    stat_p.append(sdf['per_fee'])
+    stat_p.append(sdf['score2ma'])
+    stat_p.append(sdf['total_fee'])
+    stat_p.append(sdf['score1d2'])
+    stat_p.append(sdf['hotel_quality_1'])
+    stat_p.append(sdf['hotel_quality_2'])
 
     return stat_p
 
@@ -130,7 +128,6 @@ def not_clicked(sdf,weight):
     stat_p.append(sdf['srch_room_count'].iloc[0])
     stat_p.append(sdf['srch_saturday_night_bool'].iloc[0])
     stat_p.append(sdf['random_bool'].iloc[0])
-    stat_p.append(0)
     stat_p.append(sdf['prop_id'].iloc[0])
     stat_p.append(average(sdf['prop_starrating'], weight, 0))
     stat_p.append(np.round(average(sdf['prop_brand_bool'],weight,None)))
@@ -149,6 +146,15 @@ def not_clicked(sdf,weight):
     stat_p.append(sdf['diff_mean'].mean())  # % differences price competition
     stat_p.append(sdf['rate_abs'].mean())
     stat_p.append(sdf['inv_abs'].mean())
+    stat_p.append(sdf['ump'].mean())
+    stat_p.append(sdf['price_diff'].mean())
+    stat_p.append(sdf['starrating_diff'].mean())
+    stat_p.append(sdf['per_fee'].mean())
+    stat_p.append(sdf['score2ma'].mean())
+    stat_p.append(sdf['total_fee'].mean())
+    stat_p.append(sdf['score1d2'].mean())
+    stat_p.append(sdf['hotel_quality_1'].mean())
+    stat_p.append(sdf['hotel_quality_2'].mean())
 
     return stat_p
 
@@ -159,7 +165,7 @@ def process(df):
 
     stat_col1 = ['srch_id', 'booked', 'clicked', 'visitor_location_country_id', 'visitor_hist_starrating',
             'visitor_hist_adr_usd', 'prop_country_id', 'srch_destination_id', 'srch_length_of_stay', 'srch_booking_window',
-            'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool','random_bool','booked_&_clicked']
+            'srch_adults_count', 'srch_children_count', 'srch_room_count', 'srch_saturday_night_bool','random_bool']
           
          
     stat_col2 = ['prop_id', 'prop_starrating', 'prop_brand_bool', 'prop_location_score1', 'prop_location_score2',
@@ -168,7 +174,7 @@ def process(df):
 
     stat_col4 = ['rate_sum', 'inv_sum', 'diff_mean', 'rate_abs','inv_abs']   
 
-
+    stat_col5 = ['ump','price_diff','starrating_diff','per_fee','score2ma','total_fee','score1d2','hotel_quality_1','hotel_quality_2']
 
 
     # get all unique srch_id and iterate through them
@@ -200,40 +206,28 @@ def process(df):
 
         for index,sdf in click.iterrows():
             stat = noavg(sdf,means,1)
-            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
+            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4+stat_col5)) 
         
         for index,sdf in neg.iterrows():
             stat = noavg(sdf,means,0)
-            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4)) 
+            search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4+stat_col5)) 
 
         #if len(neg) > 0:
         #    stat = not_clicked(neg,weight)
-        #    search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4))    
+        #    search_ids.append(pd.DataFrame(stat,index = stat_col1+stat_col2+stat_col4,stat_col5))    
 
     return pd.concat(search_ids,axis = 1).T
 
-
 # function read in data and process chunks to combine afterwords
 def make_data(df, chunksize = 1000000):
-    
-    search_ids = []
+    pool = Pool(3)
 
-    for df in pd.read_csv(filename, chunksize=chunksize):
-        search_ids.append(process(df))
+    df_split =  pd.read_csv(filename, chunksize=chunksize,engine = 'c')
+    result = pd.concat(pool.map(process,df_split))
 
-    # orange row
-    meta1 = ['d','d','d','d','c','c','d','d','c','c','c','c','c','d','d','d'] # discrete (d), continuous (c), string (s)
-    meta2 = ['d','c','d','c','c','c','c','c','c','d','c','c','c']    
-    #meta3 = ['c','c','c','c','c','c','c','c']
-    meta4 = ['c','c','c','c','c'] 
-    
-    index = pd.DataFrame(meta1 + meta2 + meta4, index= search_ids[0].columns).T
-    extra = index.copy()
-    extra[extra != np.nan] = np.nan
-    extra.iloc[0,2] = 'c'
-    total = [index] + [extra] + search_ids
+    pool.close()
+    pool.join()
         
-    result = pd.concat(total, axis = 0)
     return result
 
 
@@ -245,9 +239,6 @@ if len(sys.argv) > 1:
 
 else:
     print("Please speficiy the filename")
-
-
-new = make_data(filename, chunksize = chunksize)
 
 
 new = make_data(filename, chunksize = chunksize)
