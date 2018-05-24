@@ -21,15 +21,20 @@ else:
     "Please specify the filename"
     filename = "TEST"
 
-# stage one
-def combine(filename):
-    train = pd.read_csv(filename)
+def combine(filename,chunksize = 1000000):
+    pool = Pool(4)
+
+    df_split = pd.read_csv(filename,chunksize = chunksize,engine = 'c')
+    result = pd.concat(pool.map(clean,df_split))
     #test = pd.read_csv('/Volumes/FILIPE1/Data mIning/Data Mining VU data/test_set_VU_DM_2014.csv')
     #total = pd.concat([train, test], axis = 0)
-    total = train
-    return total
-# stage two
-def rate_inv_diff(total):
+
+    pool.close()
+    pool.join()
+
+    return result
+
+def clean(total):
 
     rate = ['comp1_rate', 'comp2_rate', 'comp3_rate', 'comp4_rate', 'comp5_rate', 
             'comp6_rate', 'comp7_rate', 'comp8_rate'] 
@@ -50,10 +55,6 @@ def rate_inv_diff(total):
     total.drop(rate + inv + diff, axis = 1, inplace = True)
     total.drop('date_time', axis = 1, inplace = True)
     
-    return total
-
-def mean_med_std(total):
-
     num = ['visitor_hist_starrating', 'visitor_hist_adr_usd', 'prop_location_score1',
      'prop_location_score2', 'prop_log_historical_price', 'price_usd',
      'promotion_flag', 'srch_length_of_stay', 'srch_booking_window',
@@ -69,11 +70,6 @@ def mean_med_std(total):
     num_med = [x + "_med" for x in num]
     total[num_med] = total.groupby("prop_id")[num].transform('median')
 
-    return total
-
-# stage four
-def features(total,filename):
-
     total['ump'] = np.exp(total['prop_log_historical_price']) - total['price_usd']
     total['price_diff'] = total['visitor_hist_adr_usd_mean'] - total['price_usd_mean']
     total['starrating_diff'] = total['visitor_hist_starrating_mean'] - total['prop_starrating_mean']
@@ -84,16 +80,7 @@ def features(total,filename):
     total['hotel_quality_1'] = total.groupby('prop_id')['click_bool'].transform('mean')
     total['hotel_quality_2'] = total.groupby('prop_id')['booking_bool'].transform('mean')
 
-    len_train = 4958347
-
-    total.to_csv(filename[:-4]+'_clean.csv',index = False)
-    #total.drop(['click_bool', 'gross_bookings_usd', 'booking_bool', 'position'], axis = 1, inplace = True)
-    #total.iloc[len_train:].to_csv('test_clean.csv',index = False)
-
-    return 0
+    return total
 
 total = combine(filename)
-mean_med_std(total)
-total = rate_inv_diff(total)
-total = features(total,filename)
-
+total.to_csv(filename[:-4]+'_clean.csv',index = False)
