@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import Imputer
 from sklearn.metrics import confusion_matrix
 
-train_file = 'train_1000000_preprocessed.csv'
-test_file = 'test_1000000_preprocessed.csv'
+train_file = 'train_100000_preprocessed.csv'
+test_file = 'test_100000_preprocessed.csv'
 
 columns_train = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,22,24,25,26,27,29,30,31,32,33]
 columns_test = columns_train
@@ -28,9 +28,6 @@ test_x = test.drop(['booked','clicked'],axis = 1)
 test_y = test['clicked']
 
 test_x = imp_nan.transform(test_x)
-
-plt.hist(train_y)
-plt.show()
 
 def compute(r):
     k = len(r)
